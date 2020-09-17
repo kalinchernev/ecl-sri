@@ -8,19 +8,20 @@ const version = process.env.ECL_VERSION;
 const github = "https://github.com/ec-europa/europa-component-library";
 const cdn = "https://cdn1.fpfis.tech.ec.europa.eu/ecl";
 const sriFile = `europa-component-library-v${version}-sri.json`;
-const targetDownload = `${__dirname}/downloads/${sriFile}`;
+const targetFolder = `${__dirname}/downloads`;
+const targetDownload = `${targetFolder}/${sriFile}`;
 
-const getDocs = v => {
+const getDocs = (v) => {
   const sri = require(targetDownload);
 
   const resourcesDocs = [];
   const resources = [
     "ecl-ec-preset-website.css",
     "ecl-ec-preset-website-print.css",
-    "ecl-ec-preset-website.js"
+    "ecl-ec-preset-website.js",
   ];
 
-  resources.forEach(file => {
+  resources.forEach((file) => {
     const integrity = sri[file].join(" ");
 
     if (file.includes(".css")) {
@@ -71,9 +72,13 @@ if (fs.existsSync(targetDownload)) {
   return console.log(`Notice: ${targetDownload} already exists.`);
 }
 
+if (!fs.existsSync(targetFolder)) {
+  fs.mkdirSync(targetFolder);
+}
+
 const dl = new DownloaderHelper(
   `${github}/releases/download/v${version}/${sriFile}`,
-  `${__dirname}/downloads`
+  targetFolder
 );
 
 dl.on("end", () => {
